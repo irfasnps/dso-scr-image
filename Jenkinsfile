@@ -7,6 +7,11 @@ pipeline {
         POLARIS_ACCESS_TOKEN = credentials('jenkins-polaris-token-scr-vn')
     }
     stages {
+	stage('Git Check'){
+		steps {
+			sh ' git --version '
+		}
+	}
         stage('Parameters') {
             steps { 
                 //cleanWs()
