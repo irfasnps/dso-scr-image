@@ -2,10 +2,9 @@ def source_zip_filename = 'unknown'
 
 pipeline {
 	agent {
-    	docker {
-        	image 'python:3.11'
+	    dockerfile {
         	args ' -v /home/jenkins/scr_sast_projects_files/:/source_files '
-        }
+    	}
     }
     environment {
         POLARIS_SERVER_URL = 'https://sig-cons-ms-sca.polaris.synopsys.com'
