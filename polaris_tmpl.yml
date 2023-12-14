@@ -1,0 +1,19 @@
+version: "1"
+project:
+  name: $project_name
+  branch: $project_branch_name
+  revision:
+    name: $project_name
+    date: $scan_time
+capture:
+  coverity:
+    buildless:
+      project:
+        languages:
+        - $lang_in_scope
+analyze:
+  mode: central
+install:
+  coverity:
+    version: default
+serverUrl: $polaris_url
