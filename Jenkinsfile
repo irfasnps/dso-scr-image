@@ -3,7 +3,7 @@
 pipeline {
 	agent {
 	    dockerfile {
-        	args ' -v /home/jenkins/scr_sast_projects_files/:/source_files '
+        	args ' -v /home/jenkins/scr_sast_projects_files/:/source_files:rw '
     	}
     }
     environment {
@@ -35,10 +35,6 @@ pipeline {
         }
         stage('Unzip the source code') {
             steps {
-                script {
-                    env.SOURCE_ZIP_FILE = sh(returnStdout: true, script:"`basename ${source_zip} .zip`")
-                    echo "SOURCE_ZIP_FILE -> ${SOURCE_ZIP_FILE}"
-                }
                 sh ''' 
                     if [ -f "/source_files/${source_zip}" ]; then echo 'File_exists'; fi
                     
@@ -52,11 +48,13 @@ pipeline {
                     cp /source_files/$source_zip ${WORKSPACE}/${BUILD_NUMBER}/
                     cd ${WORKSPACE}/${BUILD_NUMBER} && ls -l
                     
+                    SOURCE_ZIP_FILE=`basename ${source_zip} .zip`
                     echo "source_zip_filename -> ${SOURCE_ZIP_FILE}"
                     
                     pwd
                     
                     unzip -q "${WORKSPACE}/${BUILD_NUMBER}/${source_zip}" -d "${WORKSPACE}/${BUILD_NUMBER}"
+                    rm -f ${source_zip}
                 
                     ls -l ${WORKSPACE}/${BUILD_NUMBER}
                     ls -l "${SOURCE_ZIP_FILE}"
@@ -67,13 +65,18 @@ pipeline {
         }
         stage('Cloc run') {
             steps {
-                    sh ' cd ${WORKSPACE}/${BUILD_NUMBER} '
                     fileExists 'source_code'
                     unstash 'source_code'
-                    sh ''' 
+                    sh '''
+                        cd ${WORKSPACE}/${BUILD_NUMBER}
                         pwd && ls -l
+
+                        SOURCE_ZIP_FILE=`basename ${source_zip} .zip`
+                        echo "source_zip_filename -> ${SOURCE_ZIP_FILE}"
+
                         cd "${SOURCE_ZIP_FILE}"
                         pwd && ls -l 
+
                         cloc --version
                         cloc --md . 
                     '''
@@ -81,25 +84,29 @@ pipeline {
         }
         stage('Coverity on Polaris') {
             steps {
-                    sh " cd ${WORKSPACE}/${BUILD_NUMBER} "
                     fileExists 'source_code2'
                     fileExists 'source_code'
                     unstash 'source_code'
                     sh '''
+                        cd ${WORKSPACE}/${BUILD_NUMBER}
                         pwd && ls -l
+                        
+                        SOURCE_ZIP_FILE=`basename ${source_zip} .zip`
+                        echo "source_zip_filename -> ${SOURCE_ZIP_FILE}"
+                        
                         cd "${SOURCE_ZIP_FILE}"
                         pwd && ls -l
 
                         datetime=`date +"%Y-%m-%dT%H:%M:%SZ"`
                         echo "datetime -> $datetime"
 
-                        mv /scr/polaris_tmpl.yml polaris.yml
+                        cp /scr/polaris_tmpl.yml polaris.yml
 
-                        sed -i "s/$project_name/${project_name}_${language_in_scope}/g" polaris.yml 
-                        sed -i "s/$project_name/${project_branch_name}/g" polaris.yml 
-                        sed -i "s/$lang_in_scope/${language_in_scope}/g" polaris.yml 
-                        sed -i "s/$scan_time/$datetime/g" polaris.yml
-                        sed -i "s/$polaris_url/${POLARIS_SERVER_URL}/g" polaris.yml
+                        sed -i "s/_project_name/${project_name}_${language_in_scope}/g" polaris.yml 
+                        sed -i "s/_project_name/${project_branch_name}/g" polaris.yml 
+                        sed -i "s/_lang_in_scope/${language_in_scope}/g" polaris.yml 
+                        sed -i "s/_scan_time/$datetime/g" polaris.yml
+                        sed -i "s/_polaris_url/${POLARIS_SERVER_URL}/g" polaris.yml
 
                         cat polaris.yml
 
