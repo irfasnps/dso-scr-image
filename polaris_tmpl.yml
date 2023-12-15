@@ -16,4 +16,4 @@ analyze:
 install:
   coverity:
     version: default
-serverUrl: _polaris_url
+serverUrl: https://_polaris_url
