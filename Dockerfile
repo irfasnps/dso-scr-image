@@ -2,6 +2,8 @@ FROM python:3.11-slim
 
 WORKDIR /scr
 
+COPY polaris_tmpl.yml /scr
+
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     gcc \
