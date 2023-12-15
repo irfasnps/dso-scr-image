@@ -2,9 +2,10 @@ def source_zip_filename = 'unknown'
 
 pipeline {
 	agent {
-	    dockerfile {
+    	docker {
+        	image 'python:3.11'
         	args ' -v /home/jenkins/scr_sast_projects_files/:/source_files '
-    	}
+        }
     }
     environment {
         POLARIS_SERVER_URL = 'https://sig-cons-ms-sca.polaris.synopsys.com'
@@ -19,7 +20,7 @@ pipeline {
                             string(description: 'Provide the name of the project', name: 'project_name', trim: true), 
                             string(description: 'Provide the branch name of the project', name: 'project_branch_name', trim: true),
                             string(description: 'Provide the name of the project\'s source code zip file', name: 'source_zip', trim: true),
-                            text(description: 'Enter the languages that need to be scanned. Enter values in separate lines.', name: 'languages_in_scope')
+                            string(description: 'Enter the language that needs to be scanned for.', name: 'language_in_scope')
                         ])
                     ])
                 }
@@ -74,17 +75,29 @@ pipeline {
         stage('Coverity on Polaris') {
             steps {
                     sh " cd ${WORKSPACE}/${BUILD_NUMBER} "
+                    fileExists 'source_code2'
                     fileExists 'source_code'
                     unstash 'source_code'
-                    sh " pwd && ls -l "
-                    echo 'Polaris installed'
-                    sh ' cd source_code '
-                    sh " pwd && ls -l "
                     sh '''
+                        pwd && ls -l
+                        cd "${source_zip_filename}"
+                        pwd && ls -l
+
+                        datetime = `date +"%Y-%m-%dT%H:%M:%SZ"`
+                        echo "datetime -> $datetime"
+
+                        mv /scr/polaris_tmpl.yml polaris.yml
+
+                        sed -i "s/$project_name/${project_name}_${language_in_scope}/g" polaris.yml 
+                        sed -i "s/$project_name/${project_branch_name}/g" polaris.yml 
+                        sed -i "s/$lang_in_scope/${language_in_scope}/g" polaris.yml 
+                        sed -i "s/$scan_time/$datetime/g" polaris.yml
+                        sed -i "s/$polaris_url/${env.POLARIS_SERVER_URL}/g" polaris.yml
+
+                        cat polaris.yml
+
                         polaris --version
-                        polaris --co project="{branch:${project_branch_name}, name:${project_name}}" \
-                            --co capture.coverity.buildless.project.languages=[java,javascript] \
-                            analyze
+                        polaris capture
                     '''
             }
         }
