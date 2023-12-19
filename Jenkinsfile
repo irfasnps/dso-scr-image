@@ -109,7 +109,7 @@ pipeline {
                         sed -i "s/_lang_in_scope/${languages_in_scope}/g" polaris.yml 
                         sed -i "s/_scan_time/$datetime/g" polaris.yml
 			cat polaris.yml
-                        sed -i "s,_polaris_url,${POLARIS_SERVER_URL},g" polaris.yml
+                        sed -i "s,https://_polaris_url,${POLARIS_SERVER_URL},g" polaris.yml
 
                         cat polaris.yml
 
