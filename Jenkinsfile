@@ -48,16 +48,17 @@ pipeline {
                     cp /source_files/$source_zip ${WORKSPACE}/${BUILD_NUMBER}/
                     cd ${WORKSPACE}/${BUILD_NUMBER} && ls -l
                     
-                    SOURCE_ZIP_FILE=`basename ${source_zip} .zip`
-                    echo "source_zip_filename -> ${SOURCE_ZIP_FILE}"
-                    
-                    pwd
-                    
-                    unzip -q "${source_zip}"
-                    rm -f ${source_zip}
+                    source_zip_filename=`basename ${source_zip} .zip`
+                    echo "source_zip_filename -> ${source_zip_filename}"
+
+                    unzip -l "${source_zip}"
+                    unzip "${source_zip}"
+                
+                    pwd && ls -l ${WORKSPACE}/${BUILD_NUMBER}
                 
                     ls -l ${WORKSPACE}/${BUILD_NUMBER}
-                    ls -l "${SOURCE_ZIP_FILE}"
+                    ls -l "${source_zip_filename}"
+		    cd "${source_zip_filename}"
 
                 '''
                 stash includes: "${WORKSPACE}/${BUILD_NUMBER}/${SOURCE_ZIP_FILE}/**/*", allowEmpty: true, name: 'source_code'
