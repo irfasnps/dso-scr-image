@@ -10,7 +10,7 @@ pipeline {
         POLARIS_SERVER_URL = 'https://sig-cons-ms-sca.polaris.synopsys.com'
         POLARIS_ACCESS_TOKEN = credentials('jenkins-polaris-token-scr-vn')
         SOURCE_ZIP_FILE = 'unknown'
-	POLARIS_HOME = ''
+	POLARIS_HOME = '$HOME/.synopsys/polaris'
     }
     stages {
         stage('Parameters') {
@@ -116,6 +116,7 @@ pipeline {
                         cat polaris.yml
 
                         polaris --version
+			polaris analyze
                         polaris capture
                     '''
             }
