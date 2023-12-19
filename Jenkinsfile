@@ -90,6 +90,7 @@ pipeline {
                     fileExists 'source_code'
                     unstash 'source_code'
                     sh '''
+		    	echo ${POLARIS_ACCESS_TOKEN}
                         cd ${WORKSPACE}/${BUILD_NUMBER}
                         pwd && ls -l
                         
