@@ -10,6 +10,7 @@ pipeline {
         POLARIS_SERVER_URL = 'https://sig-cons-ms-sca.polaris.synopsys.com'
         POLARIS_ACCESS_TOKEN = credentials('jenkins-polaris-token-scr-vn')
         SOURCE_ZIP_FILE = 'unknown'
+	PN = ''
     }
     stages {
         stage('Parameters') {
