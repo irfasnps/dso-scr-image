@@ -114,7 +114,8 @@ pipeline {
                         sed -i "s,https://_polaris_url,${POLARIS_SERVER_URL},g" polaris.yml
 
                         cat polaris.yml
-			POLARIS_HOME=${WORKSPACE}/${BUILD_NUMBER}/${SOURCE_ZIP_FILE}/.synopsys/polaris
+			mkdir polaris
+			POLARIS_HOME=${WORKSPACE}/${BUILD_NUMBER}/${SOURCE_ZIP_FILE}/polaris
                         polaris --version
                         polaris capture
                     '''
