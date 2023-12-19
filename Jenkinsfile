@@ -10,7 +10,6 @@ pipeline {
         POLARIS_SERVER_URL = 'https://sig-cons-ms-sca.polaris.synopsys.com'
         POLARIS_ACCESS_TOKEN = credentials('jenkins-polaris-token-scr-vn')
         SOURCE_ZIP_FILE = 'unknown'
-	PN = ''
     }
     stages {
         stage('Parameters') {
@@ -104,8 +103,7 @@ pipeline {
                         echo "datetime -> $datetime"
 
                         cp /scr/polaris_tmpl.yml polaris.yml
-			PN = ${project_name}"_"${languages_in_scope}
-                        sed -i "s/_project_name/${PN}/g" polaris.yml 
+                        sed -i "s/_project_name/${project_name}_${languages_in_scope}/g" polaris.yml 
                         sed -i "s/_project_name/${project_branch_name}/g" polaris.yml 
                         sed -i "s/_lang_in_scope/${languages_in_scope}/g" polaris.yml 
                         sed -i "s/_scan_time/$datetime/g" polaris.yml
