@@ -28,6 +28,7 @@ pipeline {
         }
     	stage('VM check') {
         	steps {
+		sh ' echo ${project_name} '
             	sh ' cat /etc/*release '
                 sh ' python -V '
                 sh ' ls -l /source_files '
