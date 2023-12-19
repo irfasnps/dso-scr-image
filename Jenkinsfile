@@ -103,6 +103,7 @@ pipeline {
                         echo "datetime -> $datetime"
 
                         cp /scr/polaris_tmpl.yml polaris.yml
+			cat polaris.yml
                         sed -i "s/_project_name/${project_name}/g" polaris.yml 
                         sed -i "s/_project_name/${project_branch_name}/g" polaris.yml 
                         sed -i "s/_lang_in_scope/${languages_in_scope}/g" polaris.yml 
