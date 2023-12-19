@@ -20,7 +20,7 @@ pipeline {
                             string(description: 'Provide the name of the project', name: 'project_name', trim: true), 
                             string(description: 'Provide the branch name of the project', name: 'project_branch_name', trim: true),
                             string(description: 'Provide the name of the project\'s source code zip file', name: 'source_zip', trim: true),
-                            string(description: 'Enter the language that needs to be scanned for.', name: 'language_in_scope')
+                            string(description: 'Enter the language that needs to be scanned for.', name: 'languages_in_scope')
                         ])
                     ])
                 }
