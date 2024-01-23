@@ -19,5 +19,7 @@ RUN apt-get update && apt-get upgrade -y && \
 ENV PATH="$PATH:/scr/polaris_cli-linux64-2023.9.0/bin/"
 
 RUN curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
-
+RUN git clone https://github.com/gitleaks/gitleaks.git
+RUN cd gitleaks
+RUN make build
 RUN pip install whispers detect-secrets semgrep
